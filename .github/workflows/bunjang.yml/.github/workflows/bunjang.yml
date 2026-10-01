@@ -1,4 +1,4 @@
-name: Bunjang Alerts
+name: Bunjang Alerts Test
 
 on:
   schedule:
