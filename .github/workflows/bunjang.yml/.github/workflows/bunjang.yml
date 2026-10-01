@@ -1,0 +1,42 @@
+name: Bunjang Alerts
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Check Bunjang
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python check_bunjang.py
+
+      - name: Save seen listings
+        run: |
+          git config user.name "bunjang-alert-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add seen.json
+
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Update Bunjang seen listings"
+            git push
+          fi
